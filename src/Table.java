@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Table {
-    private List<Integer> varIds;
-    private NDArray probs;
+    private final List<Integer> varIds;
+    private final NDArray probs;
 
     public Table(List<Integer> varIds, NDArray probs) {
         this.probs = probs;

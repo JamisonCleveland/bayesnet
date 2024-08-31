@@ -2,11 +2,11 @@ import java.util.*;
 
 // Maybe a Network Builder/Factory?
 class BayesianNetwork {
-    private List<List<Integer>> graph;
-    private List<Variable> vars;
-    private List<String> varNames;
-    private Map<String, Integer> varIds;
-    private List<Table> tables;
+    private final List<List<Integer>> graph;
+    private final List<Variable> vars;
+    private final List<String> varNames;
+    private final Map<String, Integer> varIds;
+    private final List<Table> tables;
 
     public BayesianNetwork(List<List<Integer>> graph, List<Variable> vars, Map<String, Integer> varIds, List<String> varNames, List<Table> tables) {
         this.graph = graph;

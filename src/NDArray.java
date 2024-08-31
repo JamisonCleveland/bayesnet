@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Objects;
 
 class NDArray {
-    private double[] nums;
-    private List<Integer> shape;
+    private final double[] nums;
+    private final List<Integer> shape;
 
     public NDArray(List<Integer> shape, double[] nums) {
         this.nums = nums;

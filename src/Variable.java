@@ -3,8 +3,8 @@ import java.util.List;
 import java.util.Map;
 
 class Variable {
-    private List<String> valNames;
-    private Map<String, Integer> valIds;
+    private final List<String> valNames;
+    private final Map<String, Integer> valIds;
 
     public Variable(List<String> valNames) {
         this.valNames = valNames;
