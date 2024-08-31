@@ -172,36 +172,28 @@ class BayesianNetwork {
             }
         }
 
-        for (var n : order) {
-            var varName = varNames.get(n);
+        // Eliminate variables
+        for (var varId : order) {
+            var varName = varNames.get(varId);
             if (query.contains(varName) || evidence.containsKey(varName)) continue;
             System.out.println("Eliminating: " + varName);
 
             // product of all factors containing n
-            // TODO: simplify this, maybe using streams
             int i = 0;
-            Table temp = null;
-            while (i < factors.size()) {
-                var factor = factors.get(i);
-                if (!factor.getVarIds().contains(n)) {
-                    i++;
-                    continue;
-                }
+            var prodMaybe = factors.stream()
+                    .filter(factor -> factor.getVarIds().contains(varId))
+                    .reduce(Table::product);
+            assert prodMaybe.isPresent();
+            var prod = prodMaybe.get();
 
-                factors.remove(i);
-                if (temp == null) {
-                    temp = factor;
-                } else {
-                    temp = temp.product(factor);
-                }
-            }
-            assert temp != null;
-            temp = temp.marginalize(n);
-            factors.add(temp);
+            factors.removeIf(factor -> factor.getVarIds().contains(varId));
+
+            // add marginalized to factors
+            factors.add(prod.marginalize(varId));
         }
+
         var resMaybe = factors.stream().reduce(Table::product);
         assert resMaybe.isPresent();
-
         var res = resMaybe.get();
         res.normalize();
         return res;
