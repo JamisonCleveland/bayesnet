@@ -63,7 +63,6 @@ class BayesianNetwork {
             if (query.contains(varName) || evidence.containsKey(varName)) continue;
 
             // product of all factors containing n
-            int i = 0;
             var prodMaybe = factors.stream()
                     .filter(factor -> factor.getVarIds().contains(varId))
                     .reduce(Table::product);
