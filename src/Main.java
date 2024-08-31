@@ -135,7 +135,7 @@ class BayesianNetwork {
         var permMark = new HashSet<Integer>();
         for (int node = 0; node < graph.size(); node++) {
             if (permMark.contains(node)) continue;
-            dfs(node, order, permMark, new HashSet<Integer>());
+            dfs(node, order, permMark, new HashSet<>());
         }
         return order;
     }
@@ -163,7 +163,7 @@ class BayesianNetwork {
         for (var entry : evidence.entrySet()) {
             System.out.println("Conditioning: " + entry.getKey() + "=" + entry.getValue());
             int varId = varIds.get(entry.getKey());
-            int valId = vars.get(varId).getValNames().indexOf(entry.getValue());
+            int valId = vars.get(varId).getValIds().get(entry.getValue());
 
             for (int i = 0; i < factors.size(); i++) {
                 var factor = factors.get(i);
@@ -202,19 +202,23 @@ class BayesianNetwork {
 
 class Variable {
     private List<String> valNames;
-    private Map<String, Integer> valIdx;
+    private Map<String, Integer> valIds;
 
     public Variable(List<String> valNames) {
         this.valNames = valNames;
-        this.valIdx = new HashMap<>();
+        this.valIds = new HashMap<>();
         for (int i = 0; i < valNames.size(); i++) {
             String val = valNames.get(i);
-            this.valIdx.put(val, i);
+            this.valIds.put(val, i);
         }
     }
 
     public List<String> getValNames() {
         return valNames;
+    }
+
+    public Map<String, Integer> getValIds() {
+        return valIds;
     }
 }
 
