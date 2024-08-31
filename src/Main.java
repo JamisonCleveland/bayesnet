@@ -2,6 +2,8 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
+        // TODO: extract into unit tests
+        // TODO: maybe network factory?
         var graph = new ArrayList<List<Integer>>();
         var varNames = new ArrayList<String>();
         var vars = new ArrayList<Variable>();
@@ -76,19 +78,21 @@ public class Main {
         var query = List.of("Burglary");
         var evidence = Map.of("JohnCalls", "True", "MaryCalls", "True");
 
+        // manually ran example
         var a1 = maryCallsTable.condition(maryCallsVarId, 1);
         var a2 = johnCallsTable.condition(johnCallsVarId, 1);
         var a4 = alarmTable.product(a1).product(a2);
         var a5 = a4.marginalize(alarmVarId);
         var a6 = earthquakeTable.product(a5);
         var a7 = a6.marginalize(earthquakeVarId);
-        a7.normalize();
+        var a8 = a7.product(burglaryTable);
+        a8.normalize();
 
-        System.out.println(Arrays.toString(a7.getProbs().getNums()));
-        System.out.println(a7.getVarIds());
-        //var res = bayesnet.ask(query, evidence);
+        System.out.println(Arrays.toString(a8.getProbs().getNums()));
+        System.out.println(a8.getVarIds());
 
-        //System.out.println(res.getProbs());
+        var res = bayesnet.ask(query, evidence);
+        System.out.println(Arrays.toString(res.getProbs().getNums()));
 
         System.out.println("Hello world!");
     }
@@ -115,13 +119,13 @@ class BayesianNetwork {
     private List<List<Integer>> graph;
     private List<Variable> vars;
     private List<String> varNames;
-    private Map<String, Integer> varIdx;
+    private Map<String, Integer> varIds;
     private List<Table> tables;
 
-    public BayesianNetwork(List<List<Integer>> graph, List<Variable> vars, Map<String, Integer> varIdx, List<String> varNames, List<Table> tables) {
+    public BayesianNetwork(List<List<Integer>> graph, List<Variable> vars, Map<String, Integer> varIds, List<String> varNames, List<Table> tables) {
         this.graph = graph;
         this.vars = vars;
-        this.varIdx = varIdx;
+        this.varIds = varIds;
         this.varNames = varNames;
         this.tables = tables;
     }
@@ -152,17 +156,55 @@ class BayesianNetwork {
 
     public Table ask(List<String> query, Map<String, String> evidence) {
         var order = topSort();
-        var factors = new ArrayList<Table>(tables);
-        // apply evidence
+        Collections.reverse(order);
+
+        // condition factors
+        var factors = new ArrayList<>(tables);
+        for (var entry : evidence.entrySet()) {
+            System.out.println("Conditioning: " + entry.getKey() + "=" + entry.getValue());
+            int varId = varIds.get(entry.getKey());
+            int valId = vars.get(varId).getValNames().indexOf(entry.getValue());
+
+            for (int i = 0; i < factors.size(); i++) {
+                var factor = factors.get(i);
+                if (!factor.getVarIds().contains(varId)) continue;
+                factors.set(i, factor.condition(varId, valId));
+            }
+        }
+
         for (var n : order) {
             var varName = varNames.get(n);
             if (query.contains(varName) || evidence.containsKey(varName)) continue;
-
-            // product of all factors containing n
             System.out.println("Eliminating: " + varName);
 
+            // product of all factors containing n
+            // TODO: simplify this, maybe using streams
+            int i = 0;
+            Table temp = null;
+            while (i < factors.size()) {
+                var factor = factors.get(i);
+                if (!factor.getVarIds().contains(n)) {
+                    i++;
+                    continue;
+                }
+
+                factors.remove(i);
+                if (temp == null) {
+                    temp = factor;
+                } else {
+                    temp = temp.product(factor);
+                }
+            }
+            assert temp != null;
+            temp = temp.marginalize(n);
+            factors.add(temp);
         }
-        return null;
+        var resMaybe = factors.stream().reduce(Table::product);
+        assert resMaybe.isPresent();
+
+        var res = resMaybe.get();
+        res.normalize();
+        return res;
     }
 }
 
