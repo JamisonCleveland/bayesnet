@@ -47,7 +47,6 @@ class BayesianNetwork {
         // condition factors
         var factors = new ArrayList<>(tables);
         for (var entry : evidence.entrySet()) {
-            System.out.println("Conditioning: " + entry.getKey() + "=" + entry.getValue());
             int varId = varIds.get(entry.getKey());
             int valId = vars.get(varId).getValIds().get(entry.getValue());
 
@@ -62,7 +61,6 @@ class BayesianNetwork {
         for (var varId : order) {
             var varName = varNames.get(varId);
             if (query.contains(varName) || evidence.containsKey(varName)) continue;
-            System.out.println("Eliminating: " + varName);
 
             // product of all factors containing n
             int i = 0;
