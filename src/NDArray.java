@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class NDArray {
     private final double[] nums;
@@ -182,4 +180,37 @@ class NDArray {
         return linearIndex;
     }
 
+    public int argmax(int axis) {
+        int stride = 1;
+        for (int i = axis + 1; i < this.shape.size(); i++) {
+            stride *= this.shape.get(i);
+        }
+        int argmax = -1;
+        double max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < this.shape.get(axis); i++) {
+            double x = this.nums[stride * i];
+            if (x > max) {
+                argmax = i;
+                max = x;
+            }
+        }
+        assert argmax >= 0;
+        return argmax;
+    }
+
+    public List<Integer> argmax() {
+        int argmax = -1;
+        double max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < this.nums.length; i++) {
+            double x = this.nums[i];
+            if (x > max) {
+                argmax = i;
+                max = x;
+            }
+        }
+        assert argmax >= 0;
+        var strides = computeStrides(this.shape);
+        var multiIndex = toMultiIndex(argmax, strides);
+        return Arrays.stream(multiIndex).boxed().toList();
+    }
 }

@@ -67,4 +67,13 @@ class Table {
 
         return new Table(newVarIds, newProbs);
     }
+
+    public int mode(int varId) {
+        int axis = this.varIds.indexOf(varId);
+        return this.probs.argmax(axis);
+    }
+
+    public List<Integer> mode() {
+        return this.probs.argmax();
+    }
 }
