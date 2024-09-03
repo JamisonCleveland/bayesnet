@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-class Table {
+public class Table {
     private final List<Integer> varIds;
     private final NDArray probs;
 

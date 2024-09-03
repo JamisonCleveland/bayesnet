@@ -1,7 +1,7 @@
 import java.util.*;
 
 // Maybe a Network Builder/Factory?
-class BayesianNetwork {
+public class BayesianNetwork {
     private final List<List<Integer>> dependencyGraph;
     private final List<List<Integer>> graph;
     private final List<Variable> vars;

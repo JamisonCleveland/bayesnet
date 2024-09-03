@@ -1,7 +1,7 @@
 import java.util.*;
 import java.util.stream.Collectors;
 
-class NDArray {
+public class NDArray {
     private final double[] nums;
     private final List<Integer> shape;
 
@@ -163,7 +163,7 @@ class NDArray {
         return strides;
     }
 
-    private static int[] toMultiIndex(int index, int[] strides) {
+    public static int[] toMultiIndex(int index, int[] strides) {
         int[] multiIndex = new int[strides.length];
         for (int i = 0; i < strides.length; i++) {
             multiIndex[i] = index / strides[i];
@@ -172,7 +172,7 @@ class NDArray {
         return multiIndex;
     }
 
-    private static int toLinearIndex(int[] multiIndex, int[] strides) {
+    public static int toLinearIndex(int[] multiIndex, int[] strides) {
         int linearIndex = 0;
         for (int i = 0; i < multiIndex.length; i++) {
             linearIndex += strides[i] * multiIndex[i];
